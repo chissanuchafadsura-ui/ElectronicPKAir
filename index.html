@@ -311,6 +311,24 @@
           
           document.getElementById('username').value = '';
           document.getElementById('password').value = '';
+
+          // ตรวจสอบว่าห้องนี้บันทึกข้อมูลของวันนี้ไปหรือยัง
+          let now = new Date();
+          let alreadySubmitted = allData.some(row => {
+            if(!row[0]) return false;
+            let rowDateParts = row[0].split(' ')[0].split('/'); 
+            let rowDate = new Date(rowDateParts[2], rowDateParts[1]-1, rowDateParts[0]);
+            return rowDate.toDateString() === now.toDateString() && row[5] === res.room;
+          });
+
+          if(alreadySubmitted) {
+            document.getElementById('btnSubmit').disabled = true;
+            document.getElementById('btnSubmit').innerText = 'วันนี้ห้องนี้บันทึกแล้ว';
+            Swal.fire({ icon: 'info', title: 'แจ้งเตือน', text: 'ห้อง ' + res.room + ' ได้บันทึกข้อมูลของวันนี้ไปแล้ว' });
+          } else {
+            document.getElementById('btnSubmit').disabled = false;
+            document.getElementById('btnSubmit').innerText = 'บันทึกข้อมูล';
+          }
         } else {
           Swal.fire('ข้อผิดพลาด', res.msg, 'error');
         }
@@ -389,11 +407,15 @@
           photoPreview.style.display = 'none';
           photoDataUrl = null;
           loadDashboard(); 
+          
+          // ปิดปุ่มเนื่องจากบันทึกของวันนี้ไปแล้ว
+          document.getElementById('btnSubmit').disabled = true;
+          document.getElementById('btnSubmit').innerText = 'วันนี้ห้องนี้บันทึกแล้ว';
         } else {
           Swal.fire('เกิดข้อผิดพลาด', res.msg, 'error');
+          document.getElementById('btnSubmit').disabled = false;
+          document.getElementById('btnSubmit').innerText = 'บันทึกข้อมูล';
         }
-        document.getElementById('btnSubmit').disabled = false;
-        document.getElementById('btnSubmit').innerText = 'บันทึกข้อมูล';
       })
       .catch(err => {
         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
