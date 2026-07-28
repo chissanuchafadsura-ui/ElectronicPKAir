@@ -18,6 +18,9 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     .top-header {
       background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
@@ -35,10 +38,21 @@
     .card {
       border: none;
       border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       background-color: #ffffff;
-      padding: 20px;
+      padding: 30px 20px;
       margin-bottom: 25px;
+      width: 100%;
+    }
+    .form-card {
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .dashboard-card {
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .btn-login {
       position: absolute;
@@ -117,10 +131,10 @@
     <h5 class="text-dark" style="opacity: 0.7;">ห้องเรียนพิเศษโรงเรียนภูเขียว สพม.ชัยภูมิ</h5>
   </div>
 
-  <div class="container mt-4">
+  <div class="container-fluid flex-grow-1 px-3 px-md-4 px-xl-5 mt-4">
     
     <!-- ส่วนของฟอร์มบันทึก (จะซ่อนไว้จนกว่าจะล็อกอิน) -->
-    <div id="formSection" class="card" style="display: none;">
+    <div id="formSection" class="card form-card" style="display: none;">
       <h4 class="text-center mb-4 text-primary">แบบฟอร์มบันทึกค่าไฟฟ้า</h4>
       <div class="alert alert-info" role="alert">
         <strong>ผู้บันทึก:</strong> <span id="uName"></span> | 
@@ -154,7 +168,7 @@
     </div>
 
     <!-- ส่วนของแดชบอร์ด -->
-    <div id="dashboardSection" class="card">
+    <div id="dashboardSection" class="card dashboard-card">
       <h5 class="mb-3 text-center text-primary fw-bold">DASHBOARD สรุปผลการใช้ไฟฟ้า</h5>
       
       <!-- Filters -->
@@ -208,7 +222,7 @@
   </div>
 
   <!-- Footer -->
-  <div class="footer">
+  <div class="footer mt-auto">
     © ELECTRICITY BILL PK GIFTED 2026 ALLRIGHT RESERVED<br>
     <a href="https://www.instagram.com/big_chissanucha_pk?igsh=MWNvZGJydTk1cGJh" target="_blank">Dev_Chissanucha Fadsura</a>
   </div>
