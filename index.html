@@ -153,8 +153,18 @@
       </div>
       
       <div class="mb-3">
-        <label class="form-label">เลขมิเตอร์</label>
-        <input type="number" step="0.01" class="form-control" id="meterValue" placeholder="กรอกตัวเลขค่ามิเตอร์">
+        <label class="form-label">เลขมิเตอร์ครั้งก่อน (หน่วย)</label>
+        <input type="number" step="0.01" class="form-control bg-light" id="prevMeterValue" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-primary fw-bold">เลขมิเตอร์ปัจจุบัน (หน่วย)</label>
+        <input type="number" step="0.01" class="form-control border-primary" id="currentMeterValue" placeholder="กรอกเลขมิเตอร์ปัจจุบัน" oninput="calculateUnits()">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-danger fw-bold">หน่วยไฟฟ้าที่ใช้ (หน่วย)</label>
+        <input type="number" step="0.01" class="form-control bg-light text-danger fw-bold" id="unitsUsedValue" readonly>
       </div>
 
       <div class="mb-3 text-center">
@@ -312,6 +322,11 @@
           document.getElementById('username').value = '';
           document.getElementById('password').value = '';
 
+          // กำหนดค่าเลขมิเตอร์ครั้งก่อนที่ดึงมาจากฐานข้อมูล
+          document.getElementById('prevMeterValue').value = res.previousMeter || 0;
+          document.getElementById('currentMeterValue').value = '';
+          document.getElementById('unitsUsedValue').value = '';
+
           // ตรวจสอบว่าห้องนี้บันทึกข้อมูลของวันนี้ไปหรือยัง
           let now = new Date();
           let alreadySubmitted = allData.some(row => {
@@ -380,10 +395,22 @@
       document.getElementById('videoArea').style.display = 'none';
     }
 
+    // ฟังก์ชันคำนวณหน่วยไฟฟ้าอัตโนมัติ
+    function calculateUnits() {
+      let prev = parseFloat(document.getElementById('prevMeterValue').value) || 0;
+      let current = parseFloat(document.getElementById('currentMeterValue').value) || 0;
+      let diff = current - prev;
+      document.getElementById('unitsUsedValue').value = diff > 0 ? diff.toFixed(2) : 0;
+    }
+
     // แก้ไขใช้ Fetch API สำหรับ GitHub
     function submitData() {
-      let meter = document.getElementById('meterValue').value;
-      if(!meter) return Swal.fire('แจ้งเตือน', 'กรุณากรอกเลขมิเตอร์', 'warning');
+      let prevMeter = document.getElementById('prevMeterValue').value;
+      let currentMeter = document.getElementById('currentMeterValue').value;
+      let unitsUsed = document.getElementById('unitsUsedValue').value;
+
+      if(!currentMeter) return Swal.fire('แจ้งเตือน', 'กรุณากรอกเลขมิเตอร์ปัจจุบัน', 'warning');
+      if(parseFloat(currentMeter) < parseFloat(prevMeter)) return Swal.fire('แจ้งเตือน', 'เลขมิเตอร์ปัจจุบันต้องมากกว่าหรือเท่ากับครั้งก่อน', 'warning');
       if(!photoDataUrl) return Swal.fire('แจ้งเตือน', 'กรุณาถ่ายภาพมิเตอร์', 'warning');
       
       document.getElementById('btnSubmit').disabled = true;
@@ -391,7 +418,9 @@
       
       let payload = {
         user: currentUser,
-        meter: meter,
+        previousMeter: prevMeter,
+        currentMeter: currentMeter,
+        unitsUsed: unitsUsed,
         photoBase64: photoDataUrl
       };
 
@@ -403,7 +432,8 @@
       .then(res => {
         if(res.success) {
           Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
-          document.getElementById('meterValue').value = '';
+          document.getElementById('currentMeterValue').value = '';
+          document.getElementById('unitsUsedValue').value = '';
           photoPreview.style.display = 'none';
           photoDataUrl = null;
           loadDashboard(); 
